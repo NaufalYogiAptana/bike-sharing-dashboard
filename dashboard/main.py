@@ -9,7 +9,7 @@ st.sidebar.markdown("[GitHub](https://github.com/NaufalYogiAptana)")
 st.sidebar.markdown("[LinkedIn](https://www.linkedin.com/in/naufalyogiaptana)")
 
 # Memuat Data
-df = pd.read_csv("data_clean.csv")
+df = pd.read_csv("dashboard/data_clean.csv")
 
 # Tren Bulanan
 df['dteday'] = pd.to_datetime(df['dteday'])
