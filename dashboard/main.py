@@ -9,11 +9,21 @@ st.sidebar.markdown("[GitHub](https://github.com/NaufalYogiAptana)")
 st.sidebar.markdown("[LinkedIn](https://www.linkedin.com/in/naufalyogiaptana)")
 
 # Memuat Data
-df = pd.read_csv("dashboard/data_clean.csv")
-
-# Tren Bulanan
+df = pd.read_csv('data_clean.csv')
 df['dteday'] = pd.to_datetime(df['dteday'])
 df['year_month'] = df['dteday'].dt.to_period('M')
+
+# Filter berdasarkan rentang tanggal
+date_range = st.sidebar.date_input("Pilih Rentang Tanggal", [df['dteday'].min(), df['dteday'].max()])
+if len(date_range) == 2:
+    start_date, end_date = date_range
+    df = df[(df['dteday'] >= pd.Timestamp(start_date)) & (df['dteday'] <= pd.Timestamp(end_date))]
+
+# Filter berdasarkan musim
+season_filter = st.sidebar.multiselect("Pilih Musim", df['season'].unique(), df['season'].unique())
+df = df[df['season'].isin(season_filter)]
+
+# Tren Bulanan
 monthly_trend = df.groupby('year_month')[['casual', 'registered', 'cnt']].sum()
 
 st.subheader("Tren Penyewaan Sepeda per Bulan")
@@ -27,8 +37,6 @@ plt.ylabel("Jumlah Penyewa Sepeda")
 plt.legend()
 st.pyplot(fig)
 
-st.markdown("- Dibandingkan tahun 2011, jumlah penyewaan di tahun 2012 mengalami peningkatan. Penyewaan mulai meningkat tajam sejak Maret 2012, dengan puncak di pertengahan tahun, terutama di bulan Agustus dan September.")
-
 # Pie Chart
 st.subheader("Perbandingan Penyewaan Casual vs Registered")
 total_casual = df['casual'].sum()
@@ -40,8 +48,6 @@ fig, ax = plt.subplots()
 ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, shadow=True)
 plt.title("Perbandingan Penyewaan Casual vs Registered")
 st.pyplot(fig)
-
-st.markdown("- Sebagian besar penyewaan dilakukan oleh pengguna terdaftar (registered), yang menyumbang 81,2% dari total penyewaan, sedangkan penyewaan oleh pengguna casual hanya mencakup 18,8% dari total penyewaan.")
 
 # Pola Musiman
 st.subheader("Pola Musiman Penyewaan Sepeda")
@@ -55,8 +61,6 @@ plt.ylabel("Jumlah Penyewa")
 plt.legend()
 st.pyplot(fig)
 
-st.markdown("- Jumlah penyewaan sepeda menunjukkan pola musiman yang jelas. Penyewaan cenderung meningkat pada musim semi dan musim panas dan menurun pada musim dingin.")
-
 # Tren Per Jam Berdasarkan Musim
 st.subheader("Tren Penyewaan Sepeda per Jam Berdasarkan Musim")
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -67,5 +71,3 @@ plt.xlabel("Jam")
 plt.ylabel("Rata-rata Jumlah Penyewa")
 plt.legend()
 st.pyplot(fig)
-
-st.markdown("- Terdapat dua puncak utama dalam aktivitas penyewaan sepeda di setiap musim, yaitu pada pagi hari sekitar pukul 08:00 dan sore hari sekitar pukul 17:00. Pola ini kemungkinan besar mencerminkan waktu perjalanan pulang-pergi kerja atau sekolah.")
