@@ -11,7 +11,7 @@ st.sidebar.markdown("[LinkedIn](https://www.linkedin.com/in/naufalyogiaptana)")
 # Memuat Data
 @st.cache_data
 def load_data():
-    return pd.read_csv('data_clean.csv')
+    return pd.read_csv('./data_clean.csv')
 
 df = load_data()
 
